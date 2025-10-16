@@ -5,8 +5,8 @@ set -e  # прервать при ошибке
 IMG="test_disk.img"
 MNT="./mnt"
 LOG="$MNT/log"
-DISK_SIZE_MB=800   # общий размер диска (МБ)
-FILE_SIZE_MB=10    # размер каждого файла (МБ)
+DISK_SIZE_MB=2048   # общий размер диска (МБ)
+FILE_SIZE_MB=20    # размер каждого файла (МБ)
 BACKUP_DIR="$LOG/backup"
 
 #Подготовка окружения
@@ -55,35 +55,30 @@ run_test() {
 echo ""
 echo "Запуск 5 тестов"
 
-#Тест 1: 40 файлов, порог 80%
+# Тест 1: ниже порога
 echo ""
 generate_files 40
 run_test "№1" 80
-echo ""
 
-#Тест 2: 60 файлов, порог 70%
-echo ""
-generate_files 60
-run_test "№2" 70
-echo ""
-
-#Тест 3: 70 файлов, порог 60%
+# Тест 2: превышение порога
 echo ""
 generate_files 70
-run_test "№3" 60
+run_test "№2" 50
 echo ""
 
-#Тест 4: 20 файлов, порог 90%
-echo ""
-generate_files 20
-run_test "№4" 90
+#Тест 3: очень маленький порог
+generate_files 80
+run_test "№3" 10
 echo ""
 
-#Тест 5: 70 файлов, порог 50%
+# Тест 4: пустая папка
+rm -rf "$LOG"/*
+run_test "Пустая папка " 70
+
+# Тест 5: ошибочные параметры (CLI)
 echo ""
-generate_files 70
-run_test "№5" 50
-echo ""
+echo "===== Тест: Ошибочные параметры (CLI) ====="
+bash ./lab1.sh --path "$LOG" --threshold 70 || echo "Ошибка CLI корректно обработана"
 
 fusermount -u "$MNT" 2>/dev/null || true
 kill "$FUSE_PID" 2>/dev/null || true
