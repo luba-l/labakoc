@@ -69,7 +69,7 @@ if (( SUM == 0 )); then
 fi
 
 #Архивация и удаление
-ARCHIVE="$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).tar.gz"
+ARCHIVE="$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S)"
 
 #Проверяем, установлена ли переменная окружения LAB1_MAX_COMPRESSION=1
 if [[ "$LAB1_MAX_COMPRESSION" == "1" ]]; then
