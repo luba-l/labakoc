@@ -70,5 +70,21 @@ fi
 
 #Архивация и удаление
 ARCHIVE="$BACKUP_DIR/backup_$(date +%Y%m%d_%H%M%S).tar.gz"
-echo "Архивируем ${#TO_ARCHIVE[@]} файлов в $ARCHIVE ..."
-tar -czf "$ARCHIVE" "${TO_ARCHIVE[@]}" && rm -f "${TO_ARCHIVE[@]}"
+
+#Проверяем, установлена ли переменная окружения LAB1_MAX_COMPRESSION=1
+if [[ "$LAB1_MAX_COMPRESSION" == "1" ]]; then
+  echo "Режим максимального сжатия (LZMA)"
+  ARCHIVE="${ARCHIVE}.tar.lzma"
+  tar --lzma -cf "$ARCHIVE" "${TO_ARCHIVE[@]}"
+else
+  ARCHIVE="${ARCHIVE}.tar.gz"
+  tar -czf "$ARCHIVE" "${TO_ARCHIVE[@]}"
+fi
+
+#Удаляем исходные файлы, только если архивация прошла успешно
+if [[ $? -eq 0 ]]; then
+  rm -f "${TO_ARCHIVE[@]}"
+  echo "Архивируем ${#TO_ARCHIVE[@]} файлов в $ARCHIVE"
+else
+  echo "Ошибка при архивации, файлы не удалены"
+fi

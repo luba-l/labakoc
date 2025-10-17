@@ -80,6 +80,15 @@ echo ""
 echo "===== Тест: Ошибочные параметры (CLI) ====="
 bash ./lab1.sh --path "$LOG" --threshold 70 || echo "Ошибка CLI корректно обработана"
 
+# Тест 6: Максимальное сжатие (LZMA)
+echo ""
+# Устанавливаем переменную окружения
+export LAB1_MAX_COMPRESSION=1
+generate_files 50
+run_test "Максимальное сжатие LZMA" 20
+# Сбрасываем переменную, чтобы не влияла на другие тесты
+unset LAB1_MAX_COMPRESSION
+
 fusermount -u "$MNT" 2>/dev/null || true
 kill "$FUSE_PID" 2>/dev/null || true
 
