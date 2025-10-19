@@ -26,8 +26,10 @@ fuse2fs -o rw,fakeroot "$IMG" "$MNT" &
 FUSE_PID=$!
 sleep 1
 
-if [ ! -d "$MNT" ]; then
-  echo "Ошибка монтирования"
+# Проверка, что диск действительно смонтирован
+if ! mountpoint -q "$MNT"; then
+  echo "Ошибка: диск не смонтирован в $MNT"
+  kill "$FUSE_PID" 2>/dev/null || true
   exit 1
 fi
 
